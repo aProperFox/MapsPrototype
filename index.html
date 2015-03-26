@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Yelp en Cuenca</title>
+<meta charset="UTF-8">
+<link rel="icon" href="images/searchbutton.png">
+<link rel='stylesheet' href='css/styles.css'/>
+
+<script src='./js/jquery.min.js'></script>
+<script src='./js/jquery-ui.min.js'></script>
+<script src='./js/scripts.js'></script>
+<script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvobniQAtBzqr8BHXVV9WArLPw6pJueQM">
+    </script>
+<script type="text/javascript">
+      function initialize() {
+        var mapOptions = {
+          center: { lat: -34.397, lng: 150.644},
+          zoom: 8
+        };
+        var map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+      }
+      google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+
+</head>
+
+  <body>
+
+    <div id="map-canvas">
+
+    </div>
+
+    <div id="sidebar" class="always-top">
+      <div id="searchBar" class="">
+        <input type="text" value="Enter search term here" class="" id="searchBox"/>
+        <button class=""/>
+      </div>
+
+      <ul id='categories'>
+        <li>Restaurantes</li>
+        <li>Bars</li>
+        <li>Salas de Conciertos</li>
+        <li>Teatros</li>
+      </ul>
+    </div>
+
+    <div id="mapIcons">
+
+    </div>
+
+  </body>
+
+  <script type="text/javascript">
+
+    function toWorldCoords(x, y) {
+      var arr = [];
+      x *= 10;
+      y *= 10;
+      arr.push(parseInt(x));
+      arr.push(parseInt(y));
+      return arr;
+    }
+
+    function showItems(type, itemName, x, y) {
+      $('#mapIcons').append('<img src="images/' + type + 'Icon.png" id="' + x + y + '" class="icon"/>');
+      var item = $('#' + x + y);
+      var arr = toWorldCoords(x, y);
+      item.css({'margin-top': arr[1], 'margin-left': arr[0]});
+      console.log(item);
+    }
+
+    function query(item) {
+      $.getJSON('query/' + item, function(data) {
+        $.each(data, function(key, val) {
+          showItems(val.type, val.name, val.x, val.y);
+        });
+      });
+    }
+
+    $('#categories').on('click', 'li', function() {
+      var text = $(this).text();
+      $('#searchBox').val(text);
+      query(text);
+    });
+
+    $('#searchBar').on('click', 'button', function() {
+      query($('#searchBox').val());
+    });
+
+    $('img').click(function() {
+      console.log($(this));
+    });
+
+  </script>
+
+</html>
